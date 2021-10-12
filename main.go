@@ -99,11 +99,11 @@ func (s *MatchStorage) GetAllMatches() []*matches.GetMatchesMatchIDOKBody {
 func ProblematicMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		switch i := rand.Intn(100); {
+		case i >= (100 - timeoutErrorsPercantage):
+			c.AbortWithStatusJSON(http.StatusRequestTimeout, gin.H{"message": "internal error"})
 		case i >= (100 - timeoutErrorsPercantage - internalServerErrorsPercantage):
 			time.Sleep(time.Duration(timeoutSeconds) * time.Second)
 			c.AbortWithStatusJSON(http.StatusGatewayTimeout, gin.H{"message": "time out error"})
-		case i >= (100 - timeoutErrorsPercantage):
-			c.AbortWithStatusJSON(http.StatusRequestTimeout, gin.H{"message": "internal error"})
 		default:
 			c.Next()
 		}
