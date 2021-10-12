@@ -14,10 +14,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var storage MatchStorage
-var timeoutErrorsPercantage = 15
-var internalServerErrorsPercantage = 15
-var timoutSeconds = 1
+var (
+	storage                        MatchStorage
+	timeoutErrorsPercantage        = 15
+	internalServerErrorsPercantage = 15
+	timeoutSeconds                 = 1
+)
 
 func init() {
 	storage = MatchStorage{
@@ -79,7 +81,7 @@ func (s *MatchStorage) GetMatch(ID int64) (*matches.GetMatchesMatchIDOKBody, err
 	s.matches[ID] = match
 	s.matchesLock.Unlock()
 
-	return s.matches[ID], nil
+	return match, nil
 }
 
 func (s *MatchStorage) GetAllMatches() []*matches.GetMatchesMatchIDOKBody {
@@ -96,17 +98,14 @@ func (s *MatchStorage) GetAllMatches() []*matches.GetMatchesMatchIDOKBody {
 // ProblematicMiddleware makes handles fail sometimes
 func ProblematicMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		i := rand.Intn(100)
-		if i >= (100 - timeoutErrorsPercantage - internalServerErrorsPercantage) {
-			if i >= (100 - timeoutErrorsPercantage) {
-				time.Sleep(time.Duration(timoutSeconds) * time.Second)
-				c.AbortWithStatusJSON(http.StatusGatewayTimeout, gin.H{"message": "time out error"})
-				return
-			}
+		switch i := rand.Intn(100); {
+		case i >= (100 - timeoutErrorsPercantage - internalServerErrorsPercantage):
+			time.Sleep(time.Duration(timeoutSeconds) * time.Second)
+			c.AbortWithStatusJSON(http.StatusGatewayTimeout, gin.H{"message": "time out error"})
+		case i >= (100 - timeoutErrorsPercantage):
 			c.AbortWithStatusJSON(http.StatusRequestTimeout, gin.H{"message": "internal error"})
-			return
+		default:
+			c.Next()
 		}
-
-		c.Next()
 	}
 }
