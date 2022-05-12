@@ -1,7 +1,4 @@
-FROM golang:1.18-bullseye
-
-RUN go mod download 
-
+FROM golang:1.18.1
 EXPOSE 8080
 ENV APP_HOME /go/src/mathapp
 RUN mkdir -p "$APP_HOME"
