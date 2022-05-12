@@ -32,8 +32,13 @@ func main() {
 	router.Use(ProblematicMiddleware())
 	router.GET("/matches", getAllMatches)
 	router.GET("/matches/:match_id", getAllMatchByID)
+	router.GET("/", index)
 
 	router.Run("0.0.0.0:8080")
+}
+
+func index(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, gin.H{"message": "hello world"})
 }
 
 func getAllMatches(c *gin.Context) {
