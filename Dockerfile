@@ -3,4 +3,5 @@ EXPOSE 8080
 WORKDIR "/app"
 COPY . /app
 WORKDIR /app
-CMD ["go", "run", "main.go"]
+RUN go build ./main.go
+CMD ["./main"]
