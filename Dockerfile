@@ -1,6 +1,6 @@
-FROM golang:1.18.1
+FROM golang:1.18.1-alpine
 EXPOSE 8080
-ENV APP_HOME /go/src/mathapp
-RUN mkdir -p "$APP_HOME"
-WORKDIR "$APP_HOME"
-CMD ["go", "run" "main.go"]
+WORKDIR "/app"
+COPY . /app
+WORKDIR /app
+CMD ["go", "run", "main.go"]
