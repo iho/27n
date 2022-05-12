@@ -34,7 +34,7 @@ func main() {
 	router.GET("/matches/:match_id", getAllMatchByID)
 	router.GET("/", index)
 
-	router.Run("localhost:8080")
+	router.Run("0.0.0.0:8080")
 }
 
 func index(c *gin.Context) {
